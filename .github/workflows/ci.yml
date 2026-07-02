@@ -1,4 +1,4 @@
-name: CI - Django Tests
+name: CI/CD - Django Tests + Docker Build
 
 on:
   push:
@@ -9,7 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:16
@@ -24,21 +23,15 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
       - name: Run migrations
         run: python manage.py migrate
         env:
@@ -47,7 +40,6 @@ jobs:
           DB_NAME: gcs_app_db
           DB_USER: postgres
           DB_PASSWORD: postgres
-
       - name: Run tests
         run: python manage.py test
         env:
@@ -56,3 +48,24 @@ jobs:
           DB_NAME: gcs_app_db
           DB_USER: postgres
           DB_PASSWORD: postgres
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: gcs-app:latest
+          outputs: type=docker,dest=/tmp/gcs-app.tar
+      - name: Upload Docker image as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gcs-app-docker-image
+          path: /tmp/gcs-app.tar
+          retention-days: 7
