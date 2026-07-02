@@ -1,0 +1,62 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Pedido #{{ pedido.id }}{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Pedido #{{ pedido.id }}</h2>
+
+<section class="pedido-info">
+    <p><strong>Cliente:</strong> {{ pedido.cliente.user.get_full_name|default:pedido.cliente.user.username }}</p>
+    <p><strong>Fecha:</strong> {{ pedido.fecha|date:"d/m/Y H:i" }}</p>
+    <p><strong>Estado:</strong> <span class="estado estado-{{ pedido.estado }}">{{ pedido.get_estado_display }}</span></p>
+    <p><strong>Total:</strong> ${{ pedido.total }}</p>
+</section>
+
+{% if user.is_staff %}
+<section class="cambiar-estado">
+    <h3>Cambiar Estado</h3>
+    <form method="post" action="{% url 'pedido_update_estado' pedido.pk %}" class="form-inline">
+        {% csrf_token %}
+        <label for="estado" class="sr-only">Nuevo estado</label>
+        <select name="estado" id="estado" class="form-control">
+            {% for key, label in pedido.ESTADOS %}
+            <option value="{{ key }}" {% if pedido.estado == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary btn-small">Actualizar</button>
+    </form>
+</section>
+{% endif %}
+
+<section>
+    <h3>Detalle del Pedido</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio Unit.</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for det in pedido.detalles.all %}
+            <tr>
+                <td>{{ det.producto.nombre|default:"Producto eliminado" }}</td>
+                <td>${{ det.precio_unitario }}</td>
+                <td>{{ det.cantidad }}</td>
+                <td>${{ det.subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"><strong>Total</strong></td>
+                <td><strong>${{ pedido.total }}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+</section>
+
+<a href="{% url 'pedido_list' %}" class="btn btn-secundario">&larr; Volver</a>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block content %}
+<div class="barra-acciones">
+    <h2 class="page-title">Clientes</h2>
+    <a href="{% url 'cliente_create' %}" class="btn btn-success">+ Nuevo Cliente</a>
+</div>
+
+{% if clientes %}
+<table>
+    <thead>
+        <tr>
+            <th>Usuario</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in clientes %}
+        <tr>
+            <td>{{ c.user.username }}</td>
+            <td>{{ c.user.get_full_name }}</td>
+            <td>{{ c.user.email }}</td>
+            <td>{{ c.telefono|default:"-" }}</td>
+            <td class="acciones">
+                <a href="{% url 'cliente_update' c.pk %}" class="btn btn-small btn-warning">Editar</a>
+                <a href="{% url 'cliente_delete' c.pk %}" class="btn btn-small btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="vacio">No hay clientes registrados.</p>
+{% endif %}
+{% endblock %}

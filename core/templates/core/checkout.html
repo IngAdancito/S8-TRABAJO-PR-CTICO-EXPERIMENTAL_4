@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Confirmar Pedido{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Confirmar Pedido</h2>
+
+<section class="checkout-info">
+    <h3>Datos de envío</h3>
+    <p><strong>Cliente:</strong> {{ cliente.user.get_full_name|default:cliente.user.username }}</p>
+    <p><strong>Dirección:</strong> {{ cliente.direccion|default:"No registrada" }}</p>
+    <p><strong>Teléfono:</strong> {{ cliente.telefono|default:"No registrado" }}</p>
+</section>
+
+<section>
+    <h3>Resumen del pedido</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.producto.nombre }}</td>
+                <td>${{ item.precio_unitario }}</td>
+                <td>{{ item.cantidad }}</td>
+                <td>${{ item.cantidad|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"><strong>Total</strong></td>
+                <td><strong>${{ total }}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+</section>
+
+<form method="post" class="botones-form">
+    {% csrf_token %}
+    <a href="{% url 'carrito_view' %}" class="btn btn-secundario">Volver al carrito</a>
+    <button type="submit" class="btn btn-success">Confirmar y Pagar</button>
+</form>
+{% endblock %}

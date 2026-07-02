@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Eliminar Cliente{% endblock %}
+
+{% block content %}
+<section class="confirmar-eliminar">
+    <h2>Eliminar Cliente</h2>
+    <p>¿Estás seguro de eliminar a <strong>{{ cliente.user.get_full_name|default:cliente.user.username }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'cliente_list' %}" class="btn btn-secundario">Cancelar</a>
+    </form>
+</section>
+{% endblock %}

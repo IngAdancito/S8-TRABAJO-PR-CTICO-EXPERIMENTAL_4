@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ accion }} Producto{% endblock %}
+
+{% block content %}
+<h2 class="page-title">{{ accion }} Producto</h2>
+<form method="post" class="form-estandar">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="campo">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+        <ul class="errores">
+            {% for error in field.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <div class="botones-form">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'producto_list' %}" class="btn btn-secundario">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

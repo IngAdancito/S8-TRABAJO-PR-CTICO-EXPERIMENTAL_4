@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GCS - Gestión de Productos{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+<body>
+    <header class="encabezado">
+        <div class="contenedor encabezado-inner">
+            <h1 class="logo">
+                <a href="{% url 'dashboard' %}">GCS Store</a>
+            </h1>
+            <nav class="nav-principal" aria-label="Navegación principal">
+                <ul>
+                    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'producto_catalogo' %}">Catálogo</a></li>
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                            <li><a href="{% url 'producto_list' %}">Gestionar Productos</a></li>
+                            <li><a href="{% url 'cliente_list' %}">Clientes</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'pedido_list' %}">Mis Pedidos</a></li>
+                        <li><a href="{% url 'carrito_view' %}">
+                            Carrito
+                            <span class="badge-carrito" id="carrito-count">0</span>
+                        </a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="nav-usuario">
+                {% if user.is_authenticated %}
+                    <span class="nombre-usuario">{{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="btn btn-small btn-danger">Salir</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-small">Ingresar</a>
+                    <a href="{% url 'register' %}" class="btn btn-small btn-primary">Registrarse</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="contenedor contenido-principal">
+        {% if messages %}
+        <section class="mensajes" aria-label="Notificaciones">
+            {% for msg in messages %}
+            <article class="alerta alerta-{{ msg.tags }}" role="alert">
+                {{ msg }}
+                <button class="cerrar-alerta" aria-label="Cerrar">&times;</button>
+            </article>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="pie">
+        <div class="contenedor">
+            <p>&copy; {% now "Y" %} GCS Store — Práctica Semana 13</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

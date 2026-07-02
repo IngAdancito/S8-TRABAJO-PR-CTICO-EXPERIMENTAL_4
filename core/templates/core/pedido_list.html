@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Mis Pedidos{% endblock %}
+
+{% block content %}
+<h2 class="page-title">{% if user.is_staff %}Todos los Pedidos{% else %}Mis Pedidos{% endif %}</h2>
+
+{% if pedidos %}
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            {% if user.is_staff %}<th>Cliente</th>{% endif %}
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Detalle</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in pedidos %}
+        <tr>
+            <td>{{ p.id }}</td>
+            {% if user.is_staff %}<td>{{ p.cliente.user.username }}</td>{% endif %}
+            <td>${{ p.total }}</td>
+            <td><span class="estado estado-{{ p.estado }}">{{ p.get_estado_display }}</span></td>
+            <td>{{ p.fecha|date:"d/m/Y H:i" }}</td>
+            <td><a href="{% url 'pedido_detail' p.pk %}">Ver</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="vacio">No hay pedidos registrados.</p>
+{% endif %}
+{% endblock %}

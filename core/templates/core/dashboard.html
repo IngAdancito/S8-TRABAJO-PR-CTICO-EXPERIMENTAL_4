@@ -1,0 +1,102 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard - GCS Store{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Dashboard</h2>
+
+{% if es_admin %}
+<section class="tarjetas-stats" aria-label="Estadísticas generales">
+    <article class="tarjeta tarjeta-azul">
+        <h3>{{ total_productos }}</h3>
+        <p>Productos</p>
+    </article>
+    <article class="tarjeta tarjeta-verde">
+        <h3>{{ total_clientes }}</h3>
+        <p>Clientes</p>
+    </article>
+    <article class="tarjeta tarjeta-naranja">
+        <h3>{{ total_pedidos }}</h3>
+        <p>Pedidos</p>
+    </article>
+    <article class="tarjeta tarjeta-roja">
+        <h3>${{ ingresos|floatformat:0 }}</h3>
+        <p>Ingresos</p>
+    </article>
+    <article class="tarjeta tarjeta-amarilla">
+        <h3>{{ productos_bajos }}</h3>
+        <p>Stock bajo</p>
+    </article>
+</section>
+
+<section>
+    <h3>Pedidos Recientes</h3>
+    {% if pedidos_recientes %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pedidos_recientes %}
+            <tr>
+                <td><a href="{% url 'pedido_detail' p.pk %}">#{{ p.id }}</a></td>
+                <td>{{ p.cliente.user.username }}</td>
+                <td>${{ p.total }}</td>
+                <td><span class="estado estado-{{ p.estado }}">{{ p.get_estado_display }}</span></td>
+                <td>{{ p.fecha|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="vacio">No hay pedidos aún.</p>
+    {% endif %}
+</section>
+
+{% else %}
+<section class="tarjetas-stats" aria-label="Mis estadísticas">
+    <article class="tarjeta tarjeta-verde">
+        <h3>{{ pedidos|length }}</h3>
+        <p>Mis Pedidos</p>
+    </article>
+    <article class="tarjeta tarjeta-azul">
+        <h3>${{ total_gastado|floatformat:0 }}</h3>
+        <p>Total Gastado</p>
+    </article>
+</section>
+
+<section>
+    <h3>Mis Últimos Pedidos</h3>
+    {% if pedidos %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pedidos %}
+            <tr>
+                <td><a href="{% url 'pedido_detail' p.pk %}">#{{ p.id }}</a></td>
+                <td>${{ p.total }}</td>
+                <td><span class="estado estado-{{ p.estado }}">{{ p.get_estado_display }}</span></td>
+                <td>{{ p.fecha|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="vacio">Aún no has realizado compras. <a href="{% url 'producto_catalogo' %}">Ir al catálogo</a></p>
+    {% endif %}
+</section>
+{% endif %}
+{% endblock %}

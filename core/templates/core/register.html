@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Registro{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <h2>Crear Cuenta</h2>
+    <form method="post" class="form-auth">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="campo">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+            <small class="ayuda">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+            <ul class="errores"><li>{{ error }}</li></ul>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-block">Crear Cuenta</button>
+        <p class="auth-link">¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a></p>
+    </form>
+</section>
+{% endblock %}

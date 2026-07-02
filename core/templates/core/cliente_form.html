@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ accion }} Cliente{% endblock %}
+
+{% block content %}
+<h2 class="page-title">{{ accion }} Cliente</h2>
+<form method="post" class="form-estandar">
+    {% csrf_token %}
+    {% if reg_form %}
+    <fieldset>
+        <legend>Datos de usuario</legend>
+        {% for field in reg_form %}
+        <div class="campo">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}
+            <ul class="errores"><li>{{ error }}</li></ul>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </fieldset>
+    {% endif %}
+    <fieldset>
+        <legend>Información adicional</legend>
+        {% for field in cli_form %}
+        <div class="campo">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}
+            <ul class="errores"><li>{{ error }}</li></ul>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </fieldset>
+    <div class="botones-form">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'cliente_list' %}" class="btn btn-secundario">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Catálogo de Productos{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Catálogo de Productos</h2>
+
+{% if productos %}
+<section class="grid-productos" aria-label="Lista de productos">
+    {% for p in productos %}
+    <article class="card-producto">
+        {% if p.imagen %}
+        <figure class="card-imagen">
+            <img src="{{ p.imagen }}" alt="{{ p.nombre }}">
+        </figure>
+        {% else %}
+        <figure class="card-imagen placeholder">
+            <span>Sin imagen</span>
+        </figure>
+        {% endif %}
+        <div class="card-body">
+            <h3>{{ p.nombre }}</h3>
+            <p class="card-desc">{{ p.descripcion|truncatechars:100 }}</p>
+            <p class="card-precio">${{ p.precio }}</p>
+            <p class="card-stock">Stock: {{ p.stock }}</p>
+            {% if user.is_authenticated and not user.is_staff %}
+                {% if p.stock > 0 %}
+                <form method="post" action="{% url 'carrito_add' p.pk %}" class="form-agregar">
+                    {% csrf_token %}
+                    <label for="cant-{{ p.pk }}" class="sr-only">Cantidad</label>
+                    <input type="number" name="cantidad" id="cant-{{ p.pk }}" value="1" min="1" max="{{ p.stock }}" class="form-control input-cant">
+                    <button type="submit" class="btn btn-primary btn-small">Comprar</button>
+                </form>
+                {% else %}
+                <p class="sin-stock">Agotado</p>
+                {% endif %}
+            {% elif user.is_staff %}
+            <div class="card-acciones">
+                <a href="{% url 'producto_update' p.pk %}" class="btn btn-small btn-warning">Editar</a>
+                <a href="{% url 'producto_delete' p.pk %}" class="btn btn-small btn-danger">Eliminar</a>
+            </div>
+            {% else %}
+            <a href="{% url 'login' %}?next={% url 'producto_catalogo' %}" class="btn btn-small btn-primary">Ingresar para comprar</a>
+            {% endif %}
+        </div>
+    </article>
+    {% endfor %}
+</section>
+{% else %}
+<p class="vacio">No hay productos disponibles.</p>
+{% endif %}
+{% endblock %}

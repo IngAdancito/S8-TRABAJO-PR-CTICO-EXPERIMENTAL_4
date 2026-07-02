@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Carrito de Compras{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Carrito de Compras</h2>
+
+{% if items %}
+<table>
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.producto.nombre }}</td>
+            <td>${{ item.producto.precio }}</td>
+            <td>
+                <form method="post" action="{% url 'carrito_update' item.producto.pk %}" class="form-cantidad">
+                    {% csrf_token %}
+                    <label for="cant-{{ item.producto.pk }}" class="sr-only">Cantidad</label>
+                    <input type="number" name="cantidad" id="cant-{{ item.producto.pk }}" value="{{ item.cantidad }}" min="0" max="{{ item.producto.stock }}" class="form-control input-cant">
+                    <button type="submit" class="btn btn-small btn-primary">Actualizar</button>
+                </form>
+            </td>
+            <td>${{ item.subtotal }}</td>
+            <td>
+                <a href="{% url 'carrito_remove' item.producto.pk %}" class="btn btn-small btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3"><strong>Total</strong></td>
+            <td><strong>${{ total }}</strong></td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+<div class="botones-form">
+    <a href="{% url 'producto_catalogo' %}" class="btn btn-secundario">Seguir comprando</a>
+    <a href="{% url 'checkout' %}" class="btn btn-success">Proceder al pago</a>
+</div>
+{% else %}
+<p class="vacio">Tu carrito está vacío. <a href="{% url 'producto_catalogo' %}">Ir al catálogo</a></p>
+{% endif %}
+{% endblock %}
